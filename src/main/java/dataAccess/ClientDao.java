@@ -1,4 +1,9 @@
 package dataAccess;
 
-public class ClientDao {
+import model.Client;
+
+public class ClientDao extends DataAccess<Client> {
+    public ClientDao() {
+        super();
+    }
 }
