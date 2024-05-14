@@ -1,7 +1,10 @@
 package dataAccess;
 
 import java.lang.reflect.*;
+import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataAccess<T> {
     protected Connection connection;
@@ -34,7 +37,7 @@ public class DataAccess<T> {
     }
 
     public T read(int id) throws SQLException {
-        String query = createSelect(type.cast(id));
+        String query = createSelect(type);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -47,6 +50,7 @@ public class DataAccess<T> {
         String query = createUpdate(t);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         setParameters(preparedStatement, t);
+        System.out.println(preparedStatement.toString());
         int noRows = preparedStatement.executeUpdate();
         if (noRows == 0)
             throw new SQLException("Update failed");
@@ -67,12 +71,17 @@ public class DataAccess<T> {
     protected T extractFromResultSet(ResultSet rs) throws SQLException {
         T entity = null;
         try {
-            entity = type.getDeclaredConstructor().newInstance();
+            Constructor<T> constructor = type.getConstructor(int.class, String.class, String.class, double.class, int.class);
+            List<Object> values = new ArrayList<>();
             for (Field field : type.getDeclaredFields()) {
                 field.setAccessible(true);
                 Object value = rs.getObject(field.getName());
-                field.set(entity, value);
+                if (value instanceof BigDecimal) {
+                    value = ((BigDecimal) value).doubleValue();
+                }
+                values.add(value);
             }
+            entity = constructor.newInstance(values.toArray());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -88,6 +97,7 @@ public class DataAccess<T> {
             query.append(field.getName());
             query.append(",");
         }
+        query.deleteCharAt(query.length() - 1);
         query.append(") VALUES (");
         for (int i=0; i<t.getClass().getDeclaredFields().length; i++) {
             query.append("?");
@@ -111,6 +121,7 @@ public class DataAccess<T> {
         query.append(" WHERE ");
         query.append(t.getClass().getSimpleName().toLowerCase());
         query.append("Id = ?");
+        System.out.println(query.toString());
         return query.toString();
     }
 
@@ -123,11 +134,11 @@ public class DataAccess<T> {
         return query.toString();
     }
 
-    private String createSelect(T t) {
+    private String createSelect(Class<T> type) {
         StringBuilder query= new StringBuilder("SELECT * FROM ");
-        query.append(t.getClass().getSimpleName().toLowerCase());
+        query.append(type.getSimpleName().toLowerCase());
         query.append(" WHERE ");
-        query.append(t.getClass().getSimpleName().toLowerCase());
+        query.append(type.getSimpleName().toLowerCase());
         query.append("Id = ?");
         return query.toString();
     }

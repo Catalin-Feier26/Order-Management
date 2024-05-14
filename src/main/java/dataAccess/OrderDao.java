@@ -1,8 +1,8 @@
 package dataAccess;
 
-import model.Order;
+import model.OrderTable;
 
-public class OrderDao extends DataAccess<Order> {
+public class OrderDao extends DataAccess<OrderTable> {
     public OrderDao() {
         super();
     }

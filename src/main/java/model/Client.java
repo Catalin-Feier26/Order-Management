@@ -1,10 +1,12 @@
 package model;
 
 public class Client {
+
     public int clientId;
     private String name;
     private String address;
     private String contactNumber;
+
     public Client(int clientId, String name, String address, String contactNumber) {
         this.clientId = clientId;
         this.name = name;
