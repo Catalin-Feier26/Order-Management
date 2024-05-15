@@ -3,20 +3,20 @@ package model;
 import java.sql.Timestamp;
 
 public class OrderTable {
-    public int orderId;
+    public int ordertableId;
     private int clientId;
     private Timestamp orderDate;
 
     public OrderTable(int orderId, int clientId, Timestamp orderDate) {
-        this.orderId = orderId;
+        this.ordertableId = orderId;
         this.clientId = clientId;
         this.orderDate = orderDate;
     }
     public int getOrderTableId() {
-        return orderId;
+        return ordertableId;
     }
     public void setOrderTableId(int orderId) {
-        this.orderId = orderId;
+        this.ordertableId = orderId;
     }
     public int getClientId() {
         return clientId;
@@ -33,7 +33,7 @@ public class OrderTable {
     @Override
     public String toString() {
         return "Order{" +
-                "orderId=" + orderId +
+                "orderId=" + ordertableId +
                 ", clientId=" + clientId +
                 ", orderDate=" + orderDate +
                 '}';

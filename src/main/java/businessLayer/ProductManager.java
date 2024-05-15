@@ -4,6 +4,7 @@ import dataAccess.ProductDao;
 import model.Product;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ProductManager {
     private ProductDao productDao;
@@ -29,5 +30,8 @@ public class ProductManager {
     public int checkStock(int productId) throws SQLException {
         Product product = productDao.read(productId);
         return product.getStockQuantity();
+    }
+    public List<Product> getAllProducts() throws SQLException {
+        return productDao.readAll();
     }
 }

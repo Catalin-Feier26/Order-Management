@@ -19,7 +19,7 @@ public class DataAccess<T> {
     public T create(T t) throws SQLException {
         String query = createInsert(t);
         PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        setParameters(preparedStatement, t);
+        setParameters(preparedStatement, t, query);
         int noRows = preparedStatement.executeUpdate();
         if (noRows == 0)
             throw new SQLException("Insert failed");
@@ -35,7 +35,17 @@ public class DataAccess<T> {
         }
         return t;
     }
-
+    public List<T> readAll() throws SQLException {
+        List<T> list = new ArrayList<>();
+        String query = "SELECT * FROM " + type.getSimpleName().toLowerCase();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            T entity = extractFromResultSet(resultSet);
+            list.add(entity);
+        }
+        return list;
+    }
     public T read(int id) throws SQLException {
         String query = createSelect(type);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -49,8 +59,7 @@ public class DataAccess<T> {
     public T update(T t) throws SQLException {
         String query = createUpdate(t);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        setParameters(preparedStatement, t);
-        System.out.println(preparedStatement.toString());
+        setParameters(preparedStatement, t, query);
         int noRows = preparedStatement.executeUpdate();
         if (noRows == 0)
             throw new SQLException("Update failed");
@@ -58,7 +67,7 @@ public class DataAccess<T> {
     }
 
     public void delete(int id) throws SQLException {
-        String query = createDelete(type.cast(id));
+        String query = createDelete(id);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, id);
         int noRows = preparedStatement.executeUpdate();
@@ -71,16 +80,24 @@ public class DataAccess<T> {
     protected T extractFromResultSet(ResultSet rs) throws SQLException {
         T entity = null;
         try {
-            Constructor<T> constructor = type.getConstructor(int.class, String.class, String.class, double.class, int.class);
+            Field[] fields = type.getDeclaredFields();
+
+            Class<?>[] parameterTypes = new Class[fields.length];
+
             List<Object> values = new ArrayList<>();
-            for (Field field : type.getDeclaredFields()) {
+
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
                 field.setAccessible(true);
+                Class<?> fieldType = field.getType();
                 Object value = rs.getObject(field.getName());
-                if (value instanceof BigDecimal) {
+                if (fieldType == double.class && value instanceof BigDecimal) {
                     value = ((BigDecimal) value).doubleValue();
                 }
+                parameterTypes[i] = fieldType;
                 values.add(value);
             }
+            Constructor<T> constructor = type.getConstructor(parameterTypes);
             entity = constructor.newInstance(values.toArray());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
@@ -121,15 +138,14 @@ public class DataAccess<T> {
         query.append(" WHERE ");
         query.append(t.getClass().getSimpleName().toLowerCase());
         query.append("Id = ?");
-        System.out.println(query.toString());
         return query.toString();
     }
 
-    private String createDelete(T t) {
+    private String createDelete(int id) {
         StringBuilder query= new StringBuilder("DELETE FROM ");
-        query.append(t.getClass().getSimpleName().toLowerCase());
+        query.append(type.getSimpleName().toLowerCase());
         query.append(" WHERE ");
-        query.append(t.getClass().getSimpleName().toLowerCase());
+        query.append(type.getSimpleName().toLowerCase());
         query.append("Id = ?");
         return query.toString();
     }
@@ -143,7 +159,7 @@ public class DataAccess<T> {
         return query.toString();
     }
 
-    private void setParameters(PreparedStatement preparedStatement, T t) throws SQLException {
+    private void setParameters(PreparedStatement preparedStatement, T t, String query) throws SQLException {
         int i = 1;
         for (Field field : t.getClass().getDeclaredFields()) {
             field.setAccessible(true);
@@ -155,6 +171,15 @@ public class DataAccess<T> {
             }
             preparedStatement.setObject(i, value);
             i++;
+        }
+        // Set the additional parameter for the WHERE clause only if the query contains a WHERE clause
+        if (query.contains("WHERE")) {
+            try {
+                Object idValue = t.getClass().getMethod("get" + type.getSimpleName() + "Id").invoke(t);
+                preparedStatement.setObject(i, idValue);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

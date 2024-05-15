@@ -4,9 +4,11 @@ import dataAccess.ClientDao;
 import model.Client;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ClientManager {
     private ClientDao clientDao;
+
 
     public ClientManager() {
         this.clientDao = new ClientDao();
@@ -28,5 +30,8 @@ public class ClientManager {
 
     public Client getClient(int clientId) throws SQLException {
         return clientDao.read(clientId);
+    }
+    public List<Client> getAllClients() throws SQLException {
+        return clientDao.readAll();
     }
 }
