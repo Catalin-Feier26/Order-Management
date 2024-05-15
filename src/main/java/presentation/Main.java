@@ -1,12 +1,9 @@
 package presentation;
 
-import businessLayer.ClientManager;
-import businessLayer.OrderManager;
-import businessLayer.ProductManager;
-import model.Client;
-import model.OrderTable;
-import model.Product;
+import businessLayer.*;
+import model.*;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -33,10 +30,6 @@ public class Main {
             Client updatedClient = clientManager.updateClient(newClient.getClientId(), newClient.getName(), newClient.getAddress(), newClient.getContactNumber());
             System.out.println("Updated Client: " + updatedClient);
 
-            // Delete the client
-            clientManager.deleteClient(newClient.getClientId());
-            System.out.println("Deleted Client: " + newClient.getClientId());
-
             // Create a ProductManager instance
             ProductManager productManager = new ProductManager();
 
@@ -56,15 +49,11 @@ public class Main {
             Product updatedProduct = productManager.updateProduct(newProduct.getProductId(), newProduct.getName(), newProduct.getDescription(), newProduct.getPrice(), newProduct.getStockQuantity());
             System.out.println("Updated Product: " + updatedProduct);
 
-            // Delete the product
-            productManager.deleteProduct(newProduct.getProductId());
-            System.out.println("Deleted Product: " + newProduct.getProductId());
-
             // Create an OrderManager instance
             OrderManager orderManager = new OrderManager();
 
             // Create a new order
-            OrderTable newOrder = orderManager.createOrder(3, new Timestamp(System.currentTimeMillis()));
+            OrderTable newOrder = orderManager.createOrder(newClient.getClientId(), new Timestamp(System.currentTimeMillis()));
             System.out.println("Created Order: " + newOrder);
 
             // Get all orders
@@ -79,12 +68,44 @@ public class Main {
             OrderTable updatedOrder = orderManager.updateOrder(newOrder.getOrderTableId(), newOrder.getClientId(), newOrder.getOrderDate());
             System.out.println("Updated Order: " + updatedOrder);
 
+            // Create an OrderDetailManager instance
+            OrderDetailManager orderDetailManager = new OrderDetailManager();
+
+            // Create a new order detail
+            OrderDetail newOrderDetail = orderDetailManager.createOrderDetail(0, newOrder.getOrderTableId(), newProduct.getProductId(), 5, BigDecimal.valueOf(newProduct.getPrice()));
+            System.out.println("Created OrderDetail: " + newOrderDetail);
+
+            // Get all order details for the order
+            List<OrderDetail> orderDetails = orderDetailManager.getOrderDetailsByOrderId(newOrder.getOrderTableId());
+            System.out.println("All OrderDetails for Order " + newOrder.getOrderTableId() + ":");
+            for (OrderDetail orderDetail : orderDetails) {
+                System.out.println(orderDetail);
+            }
+
+            // Update the order detail
+            newOrderDetail.setQuantity(10);
+            OrderDetail updatedOrderDetail = orderDetailManager.updateOrderDetail(newOrderDetail.getOrderDetailId(), newOrderDetail.getOrdertableId(), newOrderDetail.getProductId(), newOrderDetail.getQuantity(), newOrderDetail.getUnitPrice());
+            System.out.println("Updated OrderDetail: " + updatedOrderDetail);
+
+            // Delete the order detail
+            orderDetailManager.deleteOrderDetail(newOrderDetail.getOrderDetailId());
+            System.out.println("Deleted OrderDetail: " + newOrderDetail.getOrderDetailId());
+
             // Delete the order
             orderManager.deleteOrder(newOrder.getOrderTableId());
             System.out.println("Deleted Order: " + newOrder.getOrderTableId());
 
+            // Delete the product
+            productManager.deleteProduct(newProduct.getProductId());
+            System.out.println("Deleted Product: " + newProduct.getProductId());
+
+            // Delete the client
+            clientManager.deleteClient(newClient.getClientId());
+            System.out.println("Deleted Client: " + newClient.getClientId());
+
         } catch (SQLException e) {
             System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 }
