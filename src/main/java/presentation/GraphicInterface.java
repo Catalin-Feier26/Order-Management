@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+/**
+ * The GraphicInterface class represents the graphical user interface for the application.
+ */
 public class GraphicInterface extends JFrame {
-
+    /**
+     * Constructs a new GraphicInterface.
+     */
     public GraphicInterface() {
         setTitle("Graphic Interface");
         setSize(800, 800); // Adjust the size of the window
@@ -62,7 +66,10 @@ public class GraphicInterface extends JFrame {
 
         setVisible(true);
     }
-
+    /**
+     * The main method is the entry point of the application.
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         new GraphicInterface();
     }

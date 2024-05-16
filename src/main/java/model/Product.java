@@ -1,5 +1,7 @@
 package model;
-
+/**
+ * The Product class represents a product in the application.
+ */
 public class Product {
     public int productId;
     private String name;

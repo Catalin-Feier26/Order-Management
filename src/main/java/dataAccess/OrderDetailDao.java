@@ -2,19 +2,27 @@ package dataAccess;
 
 import model.OrderDetail;
 
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * The OrderDetailDao class is responsible for managing order details in the application.
+ * It uses DataAccess to perform all operations related to order details.
+ */
 public class OrderDetailDao extends DataAccess<OrderDetail> {
-
+    /**
+     * Constructs a new OrderDetailDao.
+     */
     public OrderDetailDao() {
         super();
     }
-
+    /**
+     * Creates a new order detail with the given order detail.
+     * @param orderDetail the order detail to create
+     * @return the created order detail
+     */
     @Override
     protected OrderDetail extractFromResultSet(ResultSet rs) throws SQLException {
         int orderdetailId = rs.getInt("orderdetailId");
@@ -24,7 +32,11 @@ public class OrderDetailDao extends DataAccess<OrderDetail> {
 
         return new OrderDetail(orderdetailId, ordertableId, productId, quantity);
     }
-
+    /**
+     * Creates a new order detail with the given order detail ID, order table ID, product ID, and quantity.
+     * @param orderDetail the order detail to create
+     * @return the created order detail
+     */
     public List<OrderDetail> getOrderDetailsByOrderId(int orderId) throws SQLException {
         List<OrderDetail> orderDetails = new ArrayList<>();
         String query = "SELECT * FROM orderdetail WHERE ordertableId = ?";
@@ -46,7 +58,11 @@ public class OrderDetailDao extends DataAccess<OrderDetail> {
         }
         return orderDetails;
     }
-
+    /**
+     * Creates a new order detail with the given order detail ID, order table ID, product ID, and quantity.
+     * @param orderDetail the order detail to create
+     * @return the created order detail
+     */
     public List<OrderDetail> getOrderDetailsByProductId(int productId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
         PreparedStatement preparedStatement = null;

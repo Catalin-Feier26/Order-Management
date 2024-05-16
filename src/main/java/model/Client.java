@@ -1,5 +1,7 @@
 package model;
-
+/**
+ * The Client class represents a client in the application.
+ */
 public class Client {
 
     public int clientId;

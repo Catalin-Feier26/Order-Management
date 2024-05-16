@@ -6,8 +6,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Vector;
-
+/**
+ * The TableGenerator class is responsible for generating a JTable from a list of objects.
+ * @param <T> the type of the objects in the list
+ */
 public class TableGenerator<T> {
+    /**
+     * Generates a JTable from a list of objects.
+     * @param list the list of objects
+     * @return the JTable
+     */
     public JTable generateTableFromList(List<T> list) {
         if (list == null || list.isEmpty()) {
             return new JTable();

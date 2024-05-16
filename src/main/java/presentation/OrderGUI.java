@@ -10,7 +10,9 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
-
+    /**
+     * The OrderGUI class represents the graphical user interface for managing orders in the application.
+     */
 public class OrderGUI extends JFrame {
 
     private OrderManager orderManager;
@@ -21,7 +23,9 @@ public class OrderGUI extends JFrame {
     private TableGenerator<OrderTable> orderTableGenerator;
     private TableGenerator<OrderDetail> orderDetailGenerator;
     private TableGenerator<Bill> billTableGenerator;
-
+    /**
+     * Constructs a new OrderGUI.
+     */
     public OrderGUI() {
 
         orderManager = new OrderManager();

@@ -5,17 +5,29 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * The DataAccess class is responsible for managing the data access operations in the application.
+ * It uses the ConnectionFactory class to establish a connection to the database.
+ * It uses reflection to extract data from the ResultSet and set parameters in the PreparedStatement.
+ * @param <T> the type of the entity
+ */
 public class DataAccess<T> {
     protected Connection connection;
     private final Class<T> type;
-
+    /**
+     * Constructs a new DataAccess with the type of the entity.
+     */
     @SuppressWarnings("unchecked")
     public DataAccess(){
         this.type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.connection = ConnectionFactory.getConnection();
     }
-
+    /**
+     * Creates a new entity in the database.
+     * @param t the entity to create
+     * @return the created entity
+     * @throws SQLException if an error occurs while creating the entity
+     */
     public T create(T t) throws SQLException {
         String query = createInsert(t);
         PreparedStatement preparedStatement=null;
@@ -45,6 +57,11 @@ public class DataAccess<T> {
         }
         return t;
     }
+    /**
+     * Reads all entities from the database.
+     * @return a list of all entities
+     * @throws SQLException if an error occurs while reading the entities
+     */
     public List<T> readAll() throws SQLException {
         List<T> list = new ArrayList<>();
         PreparedStatement preparedStatement=null;
@@ -65,6 +82,12 @@ public class DataAccess<T> {
         }
         return list;
     }
+    /**
+     * Reads the entity with the given ID from the database.
+     * @param id the ID of the entity
+     * @return the entity with the given ID
+     * @throws SQLException if an error occurs while reading the entity
+     */
     public T read(int id) throws SQLException {
         T result=null;
         String query = createSelect(type);
@@ -82,7 +105,12 @@ public class DataAccess<T> {
         }
         return result;
     }
-
+    /**
+     * Updates the entity in the database.
+     * @param t the entity to update
+     * @return the updated entity
+     * @throws SQLException if an error occurs while updating the entity
+     */
     public T update(T t) throws SQLException {
         String query = createUpdate(t);
         PreparedStatement preparedStatement=null;
@@ -99,7 +127,11 @@ public class DataAccess<T> {
         }
         return t;
     }
-
+    /**
+     * Deletes the entity with the given ID from the database.
+     * @param id the ID of the entity
+     * @throws SQLException if an error occurs while deleting the entity
+     */
     public void delete(int id) throws SQLException {
         String query = createDelete(id);
         PreparedStatement preparedStatement= null;
@@ -117,7 +149,12 @@ public class DataAccess<T> {
             ConnectionFactory.close(connection);
         }
     }
-
+    /**
+     * Extracts the entity from the ResultSet.
+     * @param rs the ResultSet
+     * @return the entity
+     * @throws SQLException if an error occurs while extracting the entity
+     */
     protected T extractFromResultSet(ResultSet rs) throws SQLException {
         T entity = null;
         try {
@@ -143,7 +180,11 @@ public class DataAccess<T> {
         }
         return entity;
     }
-
+    /**
+     * Creates an INSERT query for the entity.
+     * @param t the entity
+     * @return the INSERT query
+     */
     private String createInsert(T t) {
         StringBuilder query= new StringBuilder("INSERT INTO ");
         query.append(t.getClass().getSimpleName().toLowerCase());
@@ -163,7 +204,11 @@ public class DataAccess<T> {
         query.append(")");
         return query.toString();
     }
-
+    /**
+     * Creates an UPDATE query for the entity.
+     * @param t the entity
+     * @return the UPDATE query
+     */
     private String createUpdate(T t) {
         StringBuilder query= new StringBuilder("UPDATE ");
         query.append(t.getClass().getSimpleName().toLowerCase());
@@ -179,7 +224,11 @@ public class DataAccess<T> {
         query.append("Id = ?");
         return query.toString();
     }
-
+    /**
+     * Creates a DELETE query for the entity.
+     * @param id the ID of the entity
+     * @return the DELETE query
+     */
     private String createDelete(int id) {
         StringBuilder query= new StringBuilder("DELETE FROM ");
         query.append(type.getSimpleName().toLowerCase());
@@ -188,7 +237,11 @@ public class DataAccess<T> {
         query.append("Id = ?");
         return query.toString();
     }
-
+    /**
+     * Creates a SELECT query for the entity.
+     * @param type the type of the entity
+     * @return the SELECT query
+     */
     private String createSelect(Class<T> type) {
         StringBuilder query= new StringBuilder("SELECT * FROM ");
         query.append(type.getSimpleName().toLowerCase());
@@ -197,7 +250,13 @@ public class DataAccess<T> {
         query.append("Id = ?");
         return query.toString();
     }
-
+    /**
+     * Sets the parameters in the PreparedStatement.
+     * @param preparedStatement the PreparedStatement
+     * @param t the entity
+     * @param query the query
+     * @throws SQLException if an error occurs while setting the parameters
+     */
     private void setParameters(PreparedStatement preparedStatement, T t, String query) throws SQLException {
         int i = 1;
         for (Field field : t.getClass().getDeclaredFields()) {

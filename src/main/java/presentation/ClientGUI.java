@@ -10,13 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
-
+/**
+ * The ClientGUI class represents the graphical user interface for managing clients in the application.
+ */
 public class ClientGUI extends JFrame {
 
     private ClientManager clientManager;
     private OrderManager orderManager;
     private TableGenerator<Client> tableGenerator;
-
+    /**
+     * Constructs a new ClientGUI.
+     */
     public ClientGUI() {
         clientManager = new ClientManager();
         orderManager = new OrderManager();

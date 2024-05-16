@@ -1,7 +1,9 @@
 package model;
 
 import java.math.BigDecimal;
-
+/**
+ * The OrderDetail class represents an order detail in the application.
+ */
 public class OrderDetail {
     private int orderdetailId;
     private int ordertableId;

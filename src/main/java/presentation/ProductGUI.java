@@ -10,13 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
-
+/**
+ * The ProductGUI class represents the graphical user interface for managing products in the application.
+ */
 public class ProductGUI extends JFrame {
 
     private ProductManager productManager;
     private TableGenerator<Product> tableGenerator;
     private OrderDetailManager orderDetailManager;
-
+    /**
+     * Constructs a new ProductGUI.
+     */
     public ProductGUI() {
         productManager = new ProductManager();
         orderDetailManager = new OrderDetailManager();

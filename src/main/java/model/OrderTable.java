@@ -1,7 +1,9 @@
 package model;
 
 import java.sql.Timestamp;
-
+/**
+ * The OrderTable class represents an order in the application.
+ */
 public class OrderTable {
     public int ordertableId;
     private int clientId;
