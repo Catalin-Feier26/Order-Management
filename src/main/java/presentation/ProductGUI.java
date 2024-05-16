@@ -1,5 +1,6 @@
 package presentation;
 
+import businessLayer.OrderDetailManager;
 import businessLayer.ProductManager;
 import model.Product;
 
@@ -14,9 +15,11 @@ public class ProductGUI extends JFrame {
 
     private ProductManager productManager;
     private TableGenerator<Product> tableGenerator;
+    private OrderDetailManager orderDetailManager;
 
     public ProductGUI() {
         productManager = new ProductManager();
+        orderDetailManager = new OrderDetailManager();
         tableGenerator = new TableGenerator<>();
 
         setTitle("PRODUCT");
@@ -151,6 +154,7 @@ public class ProductGUI extends JFrame {
                 String selectedProduct = (String) deleteProductComboBox.getSelectedItem();
                 int productId = Integer.parseInt(selectedProduct.split(" - ")[0]);
                 try {
+                    orderDetailManager.deleteOrderDetailsWithProductId(productId);
                     productManager.deleteProduct(productId);
                     JOptionPane.showMessageDialog(null, "Product deleted successfully");
                 } catch (SQLException sqlException) {

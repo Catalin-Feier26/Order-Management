@@ -48,9 +48,7 @@ public class Product {
         return "Product{" +
                 "productId=" + productId +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", price=" + price +
-                ", stockQuantity=" + stockQuantity +
                 '}';
     }
 }

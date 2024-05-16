@@ -1,4 +1,4 @@
 package model;
 
-public record Bill(int ordertableId,int productId, int quantity, double unitPrice){}
+public record Bill(int ordertableId,int clientId, int noProducts, double totalPrice){}
 

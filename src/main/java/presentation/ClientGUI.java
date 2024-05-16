@@ -1,6 +1,7 @@
 package presentation;
 
 import businessLayer.ClientManager;
+import businessLayer.OrderManager;
 import model.Client;
 
 import javax.swing.*;
@@ -13,10 +14,12 @@ import java.util.List;
 public class ClientGUI extends JFrame {
 
     private ClientManager clientManager;
+    private OrderManager orderManager;
     private TableGenerator<Client> tableGenerator;
 
     public ClientGUI() {
         clientManager = new ClientManager();
+        orderManager = new OrderManager();
         tableGenerator = new TableGenerator<>();
 
         setTitle("CLIENT");
@@ -128,6 +131,7 @@ public class ClientGUI extends JFrame {
                 String selectedClient = (String) deleteClientComboBox.getSelectedItem();
                 int clientId = Integer.parseInt(selectedClient.split(" - ")[0]);
                 try {
+                    orderManager.deleteOrdersWithClientId(clientId);
                     clientManager.deleteClient(clientId);
                     JOptionPane.showMessageDialog(null, "Client deleted successfully");
                 } catch (SQLException sqlException) {

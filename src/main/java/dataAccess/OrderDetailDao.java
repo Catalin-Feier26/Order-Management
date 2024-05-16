@@ -21,20 +21,50 @@ public class OrderDetailDao extends DataAccess<OrderDetail> {
         int ordertableId = rs.getInt("ordertableId");
         int productId = rs.getInt("productId");
         int quantity = rs.getInt("quantity");
-        BigDecimal unitPrice = rs.getBigDecimal("unitPrice");
 
-        return new OrderDetail(orderdetailId, ordertableId, productId, quantity, unitPrice);
+        return new OrderDetail(orderdetailId, ordertableId, productId, quantity);
     }
 
     public List<OrderDetail> getOrderDetailsByOrderId(int orderId) throws SQLException {
         List<OrderDetail> orderDetails = new ArrayList<>();
         String query = "SELECT * FROM orderdetail WHERE ordertableId = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, orderId);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            OrderDetail orderDetail = extractFromResultSet(resultSet);
-            orderDetails.add(orderDetail);
+        PreparedStatement preparedStatement=null;
+        try{
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, orderId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                OrderDetail orderDetail = extractFromResultSet(resultSet);
+                orderDetails.add(orderDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
+        }
+        return orderDetails;
+    }
+
+    public List<OrderDetail> getOrderDetailsByProductId(int productId) {
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        String query = "SELECT * FROM orderdetail WHERE productId = ?";
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, productId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                OrderDetail orderDetail = extractFromResultSet(resultSet);
+                orderDetails.add(orderDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
         }
         return orderDetails;
     }

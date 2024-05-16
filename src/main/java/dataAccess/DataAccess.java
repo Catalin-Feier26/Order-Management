@@ -18,72 +18,111 @@ public class DataAccess<T> {
 
     public T create(T t) throws SQLException {
         String query = createInsert(t);
-        PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        setParameters(preparedStatement, t, query);
-        int noRows = preparedStatement.executeUpdate();
-        if (noRows == 0)
-            throw new SQLException("Insert failed");
-        try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-            if (generatedKeys.next()) {
-                t.getClass().getMethod("set" + type.getSimpleName() + "Id", int.class).invoke(t, generatedKeys.getInt(1));
-            } else {
-                throw new SQLException("Creating user failed, no ID obtained.");
+        PreparedStatement preparedStatement=null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            setParameters(preparedStatement, t, query);
+            int noRows = preparedStatement.executeUpdate();
+            if (noRows == 0)
+                throw new SQLException("Insert failed");
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    t.getClass().getMethod("set" + type.getSimpleName() + "Id", int.class).invoke(t, generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                ConnectionFactory.closeStatement(preparedStatement);
+                ConnectionFactory.close(connection);
             }
-        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-            return null;
+        }finally {
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
         }
         return t;
     }
     public List<T> readAll() throws SQLException {
         List<T> list = new ArrayList<>();
-        String query = "SELECT * FROM " + type.getSimpleName().toLowerCase();
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            T entity = extractFromResultSet(resultSet);
-            list.add(entity);
+        PreparedStatement preparedStatement=null;
+        ResultSet resultSet=null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            String query = "SELECT * FROM " + type.getSimpleName().toLowerCase();
+            preparedStatement = connection.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                T entity = extractFromResultSet(resultSet);
+                list.add(entity);
+            }
+        }finally {
+            ConnectionFactory.closeResultSet(resultSet);
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
         }
         return list;
     }
     public T read(int id) throws SQLException {
+        T result=null;
         String query = createSelect(type);
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, id);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next())
-            return extractFromResultSet(resultSet);
-        return null;
+        PreparedStatement preparedStatement= null;
+        try {
+            connection= ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+                result= extractFromResultSet(resultSet);
+        } finally {
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
+        }
+        return result;
     }
 
     public T update(T t) throws SQLException {
         String query = createUpdate(t);
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        setParameters(preparedStatement, t, query);
-        int noRows = preparedStatement.executeUpdate();
-        if (noRows == 0)
-            throw new SQLException("Update failed");
+        PreparedStatement preparedStatement=null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            setParameters(preparedStatement, t, query);
+            int noRows = preparedStatement.executeUpdate();
+            if (noRows == 0)
+                throw new SQLException("Update failed");
+        } finally {
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
+        }
         return t;
     }
 
     public void delete(int id) throws SQLException {
         String query = createDelete(id);
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, id);
-        int noRows = preparedStatement.executeUpdate();
-        if (noRows == 0)
-            throw new SQLException("Delete failed");
-        else
-            System.out.println("Delete successful");
+        PreparedStatement preparedStatement= null;
+        try {
+            connection = ConnectionFactory.getConnection();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            int noRows = preparedStatement.executeUpdate();
+            if (noRows == 0)
+                throw new SQLException("Delete failed");
+            else
+                System.out.println("Delete successful");
+        }finally {
+            ConnectionFactory.closeStatement(preparedStatement);
+            ConnectionFactory.close(connection);
+        }
     }
 
     protected T extractFromResultSet(ResultSet rs) throws SQLException {
         T entity = null;
         try {
             Field[] fields = type.getDeclaredFields();
-
             Class<?>[] parameterTypes = new Class[fields.length];
-
             List<Object> values = new ArrayList<>();
 
             for (int i = 0; i < fields.length; i++) {

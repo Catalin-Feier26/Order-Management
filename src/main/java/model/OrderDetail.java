@@ -7,14 +7,13 @@ public class OrderDetail {
     private int ordertableId;
     private int productId;
     private int quantity;
-    private BigDecimal unitPrice;
 
-    public OrderDetail(int orderdetailId, int ordertableId, int productId, int quantity, BigDecimal unitPrice) {
+
+    public OrderDetail(int orderdetailId, int ordertableId, int productId, int quantity) {
         this.orderdetailId = orderdetailId;
         this.ordertableId = ordertableId;
         this.productId = productId;
         this.quantity = quantity;
-        this.unitPrice = unitPrice;
     }
 
     public int getOrderDetailId() {
@@ -49,13 +48,6 @@ public class OrderDetail {
         this.quantity = quantity;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
     @Override
     public String toString() {
         return "OrderDetail{" +
@@ -63,7 +55,6 @@ public class OrderDetail {
                 ", ordertableId=" + ordertableId +
                 ", productId=" + productId +
                 ", quantity=" + quantity +
-                ", unitPrice=" + unitPrice +
                 '}';
     }
 }

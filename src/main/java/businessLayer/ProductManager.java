@@ -34,4 +34,12 @@ public class ProductManager {
     public List<Product> getAllProducts() throws SQLException {
         return productDao.readAll();
     }
+    public Product getProductById(int productId) throws SQLException {
+        return productDao.read(productId);
+    }
+    public boolean checkStock(int productId, int quantity) throws SQLException {
+        Product product = productDao.read(productId);
+        return product.getStockQuantity() >= quantity;
+    }
+
 }
