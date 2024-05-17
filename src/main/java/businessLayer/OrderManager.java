@@ -70,8 +70,7 @@ public class OrderManager {
     }
     /**
      * Gets the order with the given order ID.
-     * @param orderId the ID of the order
-     * @return the order with the given order ID
+     * @param clientId the ID of the order
      * @throws SQLException if an error occurs while getting the order
      */
     public void deleteOrdersWithClientId(int clientId) throws SQLException {

@@ -20,7 +20,7 @@ public class OrderDetailDao extends DataAccess<OrderDetail> {
     }
     /**
      * Creates a new order detail with the given order detail.
-     * @param orderDetail the order detail to create
+     * @param rs the order detail to create
      * @return the created order detail
      */
     @Override
@@ -34,7 +34,7 @@ public class OrderDetailDao extends DataAccess<OrderDetail> {
     }
     /**
      * Creates a new order detail with the given order detail ID, order table ID, product ID, and quantity.
-     * @param orderDetail the order detail to create
+     * @param orderId the order detail to create
      * @return the created order detail
      */
     public List<OrderDetail> getOrderDetailsByOrderId(int orderId) throws SQLException {
@@ -60,7 +60,7 @@ public class OrderDetailDao extends DataAccess<OrderDetail> {
     }
     /**
      * Creates a new order detail with the given order detail ID, order table ID, product ID, and quantity.
-     * @param orderDetail the order detail to create
+     * @param productId the order detail to create
      * @return the created order detail
      */
     public List<OrderDetail> getOrderDetailsByProductId(int productId) {

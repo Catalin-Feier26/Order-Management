@@ -73,10 +73,11 @@ public class OrderDetailManager {
     }
     /**
      * Gets all order details in the application.
+     * @param productId the ID of the product
      * @return a list of all order details
      * @throws SQLException if an error occurs while getting the order details
      */
-    public List<OrderDetail> getOrderDetailsByProductId(int productId) {
+    public List<OrderDetail> getOrderDetailsByProductId(int productId) throws SQLException {
         return orderDetailDao.getOrderDetailsByProductId(productId);
     }
     /**

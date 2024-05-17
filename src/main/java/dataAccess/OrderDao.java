@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * The OrderDao class is responsible for managing orders in the application.
  * It uses DataAccess to perform all operations related to orders.
@@ -19,9 +20,10 @@ public class OrderDao extends DataAccess<OrderTable> {
     public OrderDao() {
         super();
     }
+
     /**
      * Creates a new order with the given order.
-     * @param order the order to create
+     * @param clientId the order to create
      * @return the created order
      */
     public List<OrderTable> getOrdersByClientId(int clientId) {
